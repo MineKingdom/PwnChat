@@ -10,17 +10,18 @@
 
 package com.pwn9.pwnchat;
 
-import com.pwn9.pwnchat.utils.LogManager;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
-
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.plugin.Plugin;
+
+import com.pwn9.pwnchat.utils.LogManager;
 
 /**
  * Chat Channel
@@ -38,7 +39,7 @@ public class Channel {
     private String permission = "";
     private boolean privateChannel = true;
     private Set<Chatter> chatters = Collections.newSetFromMap(new ConcurrentHashMap<Chatter,Boolean>());
-    private Set<Player> recipients = Collections.newSetFromMap(new ConcurrentHashMap<Player, Boolean>());
+    private Set<ProxiedPlayer> recipients = Collections.newSetFromMap(new ConcurrentHashMap<ProxiedPlayer, Boolean>());
 
     public Channel(String name) {
         this.name = name.toLowerCase();
@@ -129,7 +130,7 @@ public class Channel {
     public boolean hasPermission(Chatter c) {
         if (c == null || this.permission.isEmpty()) return true;
 
-        Player p = Bukkit.getPlayer(c.getPlayerName());
+        ProxiedPlayer p = c.getPlayer();
         return p.hasPermission(permission);
     }
 
@@ -138,7 +139,7 @@ public class Channel {
         return chatters.contains(c);
     }
 
-    public Set<Player> getRecipients() {
+    public Set<ProxiedPlayer> getRecipients() {
         return recipients;
     }
 
@@ -152,20 +153,19 @@ public class Channel {
 
     public void sendMessage(final Plugin p, final String playerName, final String format, final String chatMessage) {
         StringBuilder recipients = new StringBuilder();
-        for (Player r : getRecipients()) { recipients.append(r.getName()).append(" "); }
+        for (ProxiedPlayer r : getRecipients()) { recipients.append(r.getName()).append(" "); }
         LogManager.getInstance().debugMedium("Sending message: " + chatMessage + " to [" + recipients.toString().trim() + "]");
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(p, new BukkitRunnable() {
+        ProxyServer.getInstance().getScheduler().schedule(p, new Runnable() {
             @Override
             public void run() {
 
                 // For now, just send the message to players directly.
-                for (Player p : getRecipients() ) {
-                    p.sendMessage(String.format(format,
-                            playerName,chatMessage));
+                for (ProxiedPlayer p : getRecipients() ) {
+                    p.sendMessage(String.format(format, playerName,chatMessage));
                 }
             }
-        });
+        }, 0, TimeUnit.SECONDS);
 
     }
 

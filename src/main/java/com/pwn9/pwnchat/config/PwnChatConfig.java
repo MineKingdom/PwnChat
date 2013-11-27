@@ -13,6 +13,8 @@ package com.pwn9.pwnchat.config;
 import java.io.File;
 import java.util.HashMap;
 
+import net.craftminecraft.bungee.bungeeyaml.supereasyconfig.Config;
+
 public class PwnChatConfig extends Config {
 	
 	public PwnChatConfig(com.pwn9.pwnchat.PwnChat plugin) {

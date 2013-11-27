@@ -10,11 +10,16 @@
 
 package com.pwn9.pwnchat.commands.subcommands;
 
-import com.pwn9.pwnchat.*;
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+
+import com.pwn9.pwnchat.Channel;
+import com.pwn9.pwnchat.ChannelManager;
+import com.pwn9.pwnchat.Chatter;
+import com.pwn9.pwnchat.ChatterManager;
+import com.pwn9.pwnchat.PwnChat;
 import com.pwn9.pwnchat.commands.SubCommand;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 /**
  * List Channels
@@ -26,13 +31,13 @@ import org.bukkit.entity.Player;
 public class list extends SubCommand {
 
     public list(PwnChat instance) {
-        super(instance,"list");
+        super(instance, "list", "pwnchat.list");
         setUsage("list");
         setDescription("List available channels.");
-        setPermission("pwnchat.list");
     }
 
-    public boolean execute(CommandSender sender, String commandName, String[] args) {
+    @Override
+    public void execute(CommandSender sender, String[] args) {
 
         sender.sendMessage(ChatColor.GOLD + "Available Chat Channels "
                 +ChatColor.RED + "[*Talk]"
@@ -42,8 +47,8 @@ public class list extends SubCommand {
 
         Chatter chatter = null;
 
-        if (sender instanceof Player) {
-            chatter = ChatterManager.getInstance().getOrCreate((Player) sender);
+        if (sender instanceof ProxiedPlayer) {
+            chatter = ChatterManager.getInstance().getOrCreate((ProxiedPlayer) sender);
         }
 
         String prefix;
@@ -61,7 +66,6 @@ public class list extends SubCommand {
                 sender.sendMessage(" " + prefix + channel.getName() + " - " + ChatColor.WHITE + channel.getDescription());
             }
         }
-        return true;
     }
 
 }

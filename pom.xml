@@ -31,14 +31,6 @@
 
     <build>
         <finalName>${project.name}</finalName>
-        <sourceDirectory>${project.basedir}/src/main/java</sourceDirectory>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh</artifactId>
-                <version>2.4</version>
-            </extension>
-        </extensions>
 
         <resources>
             <resource>
@@ -52,41 +44,6 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.14</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>2.6</version>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
-                <configuration>
-                    <outputDirectory>jars</outputDirectory>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>2.4.1</version>
-                <configuration>
-                    <tagNameFormat>v@{project.version}</tagNameFormat>
-                    <useReleaseProfile>false</useReleaseProfile>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-scm-plugin</artifactId>
-                <version>1.8.1</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
@@ -95,112 +52,46 @@
                     <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>2.0</version>
-                <configuration>
-                    <minimizeJar>true</minimizeJar>
-                    <artifactSet>
-                        <includes>
-                            <include>org.mcstats.bukkit:metrics</include>
-                        </includes>
-                    </artifactSet>
-                    <relocations>
-                        <relocation>
-                            <pattern>org.mcstats</pattern>
-                            <shadedPattern>com.pwn9.PwnFilter.mcstats</shadedPattern>
-                        </relocation>
-                    </relocations>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
 
         </plugins>
     </build>
-    <scm>
-        <connection>scm:git:https://github.com/ptoal/PwnChat.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/ptoal/PwnChat.git</developerConnection>
-        <tag>HEAD</tag>
-    </scm>
-
-    <ciManagement>
-        <system>jenkins</system>
-        <url>http://ci.toal.ca</url>
-    </ciManagement>
-
-    <distributionManagement>
-        <downloadUrl>http://ci.toal.ca/repo/PwnChat</downloadUrl>
-        <repository>
-            <id>toal-ca</id>
-            <name>Pwn Release</name>
-            <url>scp://ci.toal.ca/home/tkflight/domains/toal.ca/public_html/repo/</url>
-        </repository>
-        <snapshotRepository>
-            <id>toal-ca</id>
-            <name>Pwn Snapshot</name>
-            <url>scp://ci.toal.ca/home/tkflight/domains/toal.ca/public_html/repo/snapshots</url>
-        </snapshotRepository>
-    </distributionManagement>
-
-
-
+    
     <properties>
-  	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  	<bukkitVersion>1.6.4-R0.1</bukkitVersion>
+  	  <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  	  <bukkitVersion>1.6.4-R0.1</bukkitVersion>
       <pwnchat.version>${project.version}</pwnchat.version>
-  </properties>
+    </properties>
   
   <repositories>
-      <repository>
-          <id>pwn-repo</id>
-          <url>http://ci.toal.ca/repo/</url>
-      </repository>
-
-      <repository>
-          <id>bukkit-repo</id>
-          <url>http://repo.bukkit.org/content/groups/public/</url>
-      </repository>
 	<repository>
-		<id>vault-repo</id>
-		<url>http://ci.herocraftonline.com/plugin/repository/everything</url>
-	</repository>
-
+        <id>sonatype-oss-public</id>
+        <url>https://oss.sonatype.org/content/groups/public/</url>
+        <releases>
+            <enabled>true</enabled>
+        </releases>
+        <snapshots>
+            <enabled>true</enabled>
+        </snapshots>
+    </repository>
+    <repository>
+      <id>craftminecraft-dev</id>
+      <url>http://repo.craftminecraft.net/content/repositories/releases</url>
+    </repository>
   </repositories>
   
   <dependencies>
   	<dependency>
-  		<groupId>org.bukkit</groupId>
-  		<artifactId>bukkit</artifactId>
-  		<version>1.6.2-R1.0</version>
-  		<type>jar</type>
-  		<scope>compile</scope>
-  	</dependency>
-  	<dependency>
-		<groupId>net.milkbowl.vault</groupId>
-		<artifactId>Vault</artifactId>
-		<version>1.2.27</version>
-	</dependency>
-    <dependency>
-        <groupId>com.pwn9.PwnFilter</groupId>
-        <artifactId>PwnFilter</artifactId>
-        <version>3.2.0-alpha1</version>
-        <type>jar</type>
-        <scope>compile</scope>
+       <groupId>net.md-5</groupId>
+       <artifactId>bungeecord-api</artifactId>
+       <version>1.7-SNAPSHOT</version>
+       <scope>provided</scope>
     </dependency>
-    <!--<dependency>-->
-        <!--<groupId>net.ess3</groupId>-->
-        <!--<artifactId>Essentials</artifactId>-->
-        <!--<version>2.x-20131025.155217-1</version>-->
-        <!--<type>jar</type>-->
-        <!--<scope>compile</scope>-->
-    <!--</dependency>-->
+    
+    <dependency>
+      <groupId>net.craftminecraft.bungee</groupId>
+      <artifactId>bungeeyaml</artifactId>
+      <version>1.2.4-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 </project>

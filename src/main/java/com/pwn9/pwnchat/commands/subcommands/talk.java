@@ -10,12 +10,17 @@
 
 package com.pwn9.pwnchat.commands.subcommands;
 
-import com.pwn9.pwnchat.*;
-import com.pwn9.pwnchat.commands.SubCommand;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import java.util.List;
+
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+
+import com.pwn9.pwnchat.Channel;
+import com.pwn9.pwnchat.ChannelManager;
+import com.pwn9.pwnchat.Chatter;
+import com.pwn9.pwnchat.ChatterManager;
+import com.pwn9.pwnchat.PwnChat;
+import com.pwn9.pwnchat.commands.SubCommand;
 
 /**
  * List Channels
@@ -27,51 +32,48 @@ import java.util.List;
 public class talk extends SubCommand {
 
     public talk(PwnChat instance) {
-        super(instance,"talk");
+        super(instance, "talk", "pwnchat.talk");
         setUsage("talk <channel>");
         setDescription("Change your default channel.");
-        setPermission("pwnchat.talk");
     }
 
-    public boolean execute(CommandSender sender, String commandName, String[] args) {
+	public void execute(CommandSender sender, String[] args) {
 
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof ProxiedPlayer)) {
             sender.sendMessage(PwnChat.PREFIX + " Only players can execute this command.");
-            return true;
+            return;
         }
-        Chatter chatter = ChatterManager.getInstance().getOrCreate((Player) sender);
+        Chatter chatter = ChatterManager.getInstance().getOrCreate((ProxiedPlayer) sender);
 
         if (args.length < 2) {
             sender.sendMessage(getUsage());
-            return true;
+            return;
         }
 
         if (args[1].equalsIgnoreCase("local")) {
             chatter.setFocus(null);
             sender.sendMessage(PwnChat.PREFIX + " You are now talking in the local server channel.");
-            return true;
+            return;
         }
 
         Channel channel = ChannelManager.getInstance().getChannel(args[1].toLowerCase());
 
         if (channel == null ) {
             sender.sendMessage(PwnChat.PREFIX + " Channel named: " + args[1] + " does not exist!");
-            return true;
+            return;
         }
 
         if (channel.hasChatter(chatter)) {
             chatter.setFocus(channel);
             sender.sendMessage(PwnChat.PREFIX+" You are now talking in the "+ channel.getName() + " channel.");
-            return true;
         } else {
             sender.sendMessage(PwnChat.PREFIX + " You must be listening to the channel before you can talk in it!");
-            return true;
         }
 
     }
 
     @Override
-    public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+    public List<String> tabComplete(CommandSender sender, String[] args) {
         return ChannelManager.getInstance().getCompletions(sender, args);
     }
 

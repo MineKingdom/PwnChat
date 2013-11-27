@@ -10,10 +10,10 @@
 
 package com.pwn9.pwnchat;
 
-import org.bukkit.entity.Player;
-
 import java.util.Collection;
 import java.util.concurrent.ConcurrentHashMap;
+
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
  * Singleton for managing all server channels
@@ -34,7 +34,7 @@ public class ChatterManager {
         return _instance;
     }
 
-    public Chatter getOrCreate(Player player) {
+    public Chatter getOrCreate(ProxiedPlayer player) {
 
         if (player == null) return null;
 

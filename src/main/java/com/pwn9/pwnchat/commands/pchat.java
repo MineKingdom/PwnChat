@@ -10,17 +10,22 @@
 
 package com.pwn9.pwnchat.commands;
 
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.ChatEvent;
+import net.md_5.bungee.api.plugin.Command;
+
 import com.pwn9.pwnchat.Channel;
 import com.pwn9.pwnchat.ChannelManager;
 import com.pwn9.pwnchat.PwnChat;
-import com.pwn9.pwnchat.commands.subcommands.*;
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-
-import static org.bukkit.ChatColor.GOLD;
+import com.pwn9.pwnchat.commands.subcommands.dumpdata;
+import com.pwn9.pwnchat.commands.subcommands.list;
+import com.pwn9.pwnchat.commands.subcommands.listen;
+import com.pwn9.pwnchat.commands.subcommands.reload;
+import com.pwn9.pwnchat.commands.subcommands.silence;
+import com.pwn9.pwnchat.commands.subcommands.talk;
 
 /**
  * Main command handler for all /pr commands.
@@ -38,34 +43,8 @@ public class pchat extends BaseCommandExecutor {
     }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String alias, String[] args) {
-
-        // If this is a channel prefix, then send the message to that channel.
-
-        if (args.length > 1) {
-            for (Channel c : ChannelManager.getInstance().getChannelList()) {
-                if (c.getPrefix().equalsIgnoreCase(args[0]) && sender.hasPermission(c.getPermission())) {
-                    int i;
-                    StringBuilder message = new StringBuilder();
-                    for ( i = 1 ; i < args.length ; i++ ) {
-                        message.append(args[i]).append(" ");
-                    }
-                    // TODO: Fix this.
-                    if (sender instanceof Player) {
-                        AsyncPlayerChatEvent e = new AsyncPlayerChatEvent(false, (Player)sender, message.toString(), c.getRecipients());
-                        Bukkit.getServer().getPluginManager().callEvent(e);
-                    }
-                    return true;
-                }
-            }
-        }
-
-        return super.onCommand(sender, command, alias, args);
-    }
-
-    @Override
-    public boolean sendHelpMsg(CommandSender sender, String alias) {
-        sender.sendMessage(GOLD + "PwnChat Commands:");
-        return super.sendHelpMsg(sender, alias);
+    public void sendHelpMsg(CommandSender sender) {
+        sender.sendMessage(ChatColor.GOLD + "PwnChat Commands:");
+        super.sendHelpMsg(sender);
     }
 }

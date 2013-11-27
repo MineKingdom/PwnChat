@@ -20,24 +20,25 @@ package com.pwn9.pwnchat.commands;
  * To change this template use File | Settings | File Templates.
  */
 
-import com.pwn9.pwnchat.PwnChat;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.TabExecutor;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class BaseCommandExecutor implements TabExecutor {
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.plugin.Command;
+import net.md_5.bungee.api.plugin.TabExecutor;
+
+import com.pwn9.pwnchat.PwnChat;
+
+public class BaseCommandExecutor extends Command implements TabExecutor {
     protected final PwnChat plugin;
     private final Map<String,SubCommand> subCommands;
 
     public BaseCommandExecutor(PwnChat instance){
+    	super("pchat", null, "pc");
         plugin = instance;
         subCommands = new HashMap<String, SubCommand>();
-
     }
 
     public void addSubCommand(SubCommand subCommand) {
@@ -48,27 +49,25 @@ public class BaseCommandExecutor implements TabExecutor {
     }
 
     @Override
-    public boolean onCommand(final CommandSender sender, final Command command, String alias, final String[] args) {
+    public void execute (final CommandSender sender, final String[] args) {
         if (args.length < 1) {
-            sendHelpMsg(sender, alias);
-            return true;
+            sendHelpMsg(sender);
+            return;
         }
 
         SubCommand subCommand = subCommands.get(args[0].toLowerCase());
         if (subCommand == null) {
-            sendHelpMsg(sender, alias);
+            sendHelpMsg(sender);
         } else {
             if (subCommand.getPermission() == null || sender.hasPermission(subCommand.getPermission())) {
-                subCommand.execute(sender, alias, args);
+                subCommand.execute(sender, args);
             } else {
                 sender.sendMessage(PwnChat.PREFIX+" You don't have permission to do that.");
-                return true;
             }
         }
-        return true;
     }
 
-    public boolean sendHelpMsg(CommandSender sender, String alias) {
+    public void sendHelpMsg(CommandSender sender) {
 
         ArrayList<SubCommand> availableCommands = new ArrayList<SubCommand>();
 
@@ -80,15 +79,12 @@ public class BaseCommandExecutor implements TabExecutor {
         }
 
         if (availableCommands.size() != 0 ) {
-            sender.sendMessage("Available commands for " + alias + ":");
+            sender.sendMessage("Available commands for pchat :");
 
             for ( SubCommand subCommand : availableCommands) {
-                sender.sendMessage("/" + alias + " " +
-                        subCommand.getHelpMessage());
+                sender.sendMessage("/pchat " + subCommand.getHelpMessage());
             }
         }
-
-        return true;
     }
 
     /**
@@ -101,7 +97,7 @@ public class BaseCommandExecutor implements TabExecutor {
      * @return A List of possible completions for the final argument, or null to default to the command executor
      */
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+    public List<String> onTabComplete(CommandSender sender, String[] args) {
         List<String> completions = new ArrayList<String>();
 
         if (args.length == 1 ) {
@@ -116,7 +112,7 @@ public class BaseCommandExecutor implements TabExecutor {
         } else if (args.length > 1) {
             SubCommand subCommand = subCommands.get(args[0].toLowerCase());
             if ( subCommand != null ) {
-                return subCommand.tabComplete(sender, alias, args);
+                return subCommand.tabComplete(sender, args);
             }
         }
 

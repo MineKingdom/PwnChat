@@ -10,14 +10,15 @@
 
 package com.pwn9.pwnchat.listeners;
 
+import net.md_5.bungee.api.event.PlayerDisconnectEvent;
+import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
+
 import com.pwn9.pwnchat.Chatter;
 import com.pwn9.pwnchat.ChatterManager;
-import com.pwn9.pwnchat.utils.LogManager;
 import com.pwn9.pwnchat.PwnChat;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerQuitEvent;
+import com.pwn9.pwnchat.utils.LogManager;
 
 /**
  * Listen for Player join events and set up their default channels.
@@ -30,38 +31,14 @@ public class PlayerQuitListener implements Listener {
 
     public PlayerQuitListener(PwnChat instance) {
         plugin = instance;
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        plugin.getProxy().getPluginManager().registerListener(plugin, this);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerQuit(PlayerQuitEvent event) {
+    public void onPlayerQuit(PlayerDisconnectEvent event) {
 
         LogManager.getInstance().debugMedium("Removing Player: " + event.getPlayer().getName());
         Chatter chatter = ChatterManager.getInstance().getOrCreate(event.getPlayer());
         chatter.remove();
-
-        /*
-        Every time someone leaves, check to see how many players are online,
-        and if there are more than 20 chatters over that number, clean out
-        logged off players.
-
-        Why do this?  It's kind-of a quick hack to prevent memory leaks, while
-        at the same time caching the players joined channels for a little while.
-
-        TODO: Synchronize player channels / settings across servers.
-        TODO: Make the code below work without removing players from channels when someone else logs out!
-        */
-
-/*        List<Player> onlinePlayers = new ArrayList<Player>(Arrays.asList(plugin.getServer().getOnlinePlayers()));
-
-        if (ChatterManager.getInstance().getAllChatters().size() -
-                onlinePlayers.size() > 20 ) {
-
-            for (Chatter chatter : ChatterManager.getInstance().getAllChatters()) {
-               if (!onlinePlayers.contains(chatter.getPlayer())) {
-                    ChatterManager.getInstance().remove(chatter);
-                }
-            }
-        }*/
     }
 }

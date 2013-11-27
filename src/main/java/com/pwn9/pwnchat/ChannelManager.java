@@ -10,17 +10,22 @@
 
 package com.pwn9.pwnchat;
 
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+
 import com.pwn9.pwnchat.config.ConfigChannel;
 import com.pwn9.pwnchat.config.PwnChatConfig;
 import com.pwn9.pwnchat.utils.LogManager;
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
-
-import java.text.MessageFormat;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Singleton for managing all server channels
@@ -175,10 +180,8 @@ public class ChannelManager {
 
         if (args.length == 2 ) {
 
-            if (sender instanceof ConsoleCommandSender) {
-                channelList = ChannelManager.getInstance().getChannelList();
-            } else if (sender instanceof Player){
-                Chatter chatter = ChatterManager.getInstance().getOrCreate((Player) sender);
+            if (sender instanceof ProxiedPlayer){
+                Chatter chatter = ChatterManager.getInstance().getOrCreate((ProxiedPlayer) sender);
                 channelList = chatter.permittedChannels();
             } else {
                 channelList = Collections.emptyList();

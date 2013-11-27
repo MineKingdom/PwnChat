@@ -10,13 +10,13 @@
 
 package com.pwn9.pwnchat;
 
-import org.bukkit.entity.Player;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 
 /**
  * Information about a Player's Chat channels.
@@ -29,9 +29,9 @@ public class Chatter {
     private String playerName; // Player name
     private Set<Channel> channels; //All channels this player is listening to.
     private Channel focus; // Channel this player is talking in. (default = local = local server)
-    private Player player;
+    private ProxiedPlayer player;
 
-    public Chatter(String playerName, Player p) {
+    public Chatter(String playerName, ProxiedPlayer p) {
         if ( playerName == null ) throw new IllegalArgumentException("PlayerName can not be null");
         this.playerName = playerName;
         this.player = p;
@@ -103,11 +103,11 @@ public class Chatter {
         return retval;
     }
 
-    public Player getPlayer() {
+    public ProxiedPlayer getPlayer() {
         return player;
     }
 
-    public void setPlayer(Player player) {
+    public void setPlayer(ProxiedPlayer player) {
         this.player = player;
     }
 }

@@ -10,8 +10,13 @@
 
 package com.pwn9.pwnchat.commands;
 
+import java.util.Collections;
+import java.util.List;
+
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.plugin.Command;
+
 import com.pwn9.pwnchat.PwnChat;
-import org.bukkit.command.Command;
 
 /**
  * SubCommand adds the plugin to the instance of Command.
@@ -24,9 +29,11 @@ import org.bukkit.command.Command;
 public abstract class SubCommand extends Command {
 
     protected final PwnChat plugin;
+	private String description = "";
+	private String usage = "";
 
-    public SubCommand(PwnChat plugin, String name) {
-        super(name);
+    public SubCommand(PwnChat plugin, String name, String permission) {
+        super(name, permission);
         this.plugin = plugin;
     }
 
@@ -42,4 +49,24 @@ public abstract class SubCommand extends Command {
         }
         return message;
     }
+
+	public String getDescription() {
+		return "";
+	}
+
+	public String getUsage() {
+		return "";
+	}
+
+	public void setDescription(String desc) {
+		this.description = desc == null ? "" : desc;
+	}
+
+	public void setUsage(String usage) {
+		this.usage = usage == null ? "" : usage;
+	}
+
+	public List<String> tabComplete(CommandSender sender, String[] args) {
+		return Collections.emptyList();
+	}
 }

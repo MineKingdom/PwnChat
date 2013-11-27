@@ -10,9 +10,10 @@
 
 package com.pwn9.pwnchat.commands.subcommands;
 
+import net.md_5.bungee.api.CommandSender;
+
 import com.pwn9.pwnchat.PwnChat;
 import com.pwn9.pwnchat.commands.SubCommand;
-import org.bukkit.command.CommandSender;
 
 /**
  * Reload configs
@@ -24,16 +25,15 @@ import org.bukkit.command.CommandSender;
 public class reload extends SubCommand {
 
     public reload(PwnChat instance) {
-        super(instance,"reload");
+        super(instance, "reload", "pwnchat.reload");
         setUsage("reload");
         setDescription("Reload config.");
-        setPermission("pwnchat.reload");
     }
 
-    public boolean execute(CommandSender sender, String commandName, String[] args) {
+    @Override
+    public void execute(CommandSender sender, String[] args) {
         plugin.reloadConfig();
         sender.sendMessage(PwnChat.PREFIX + " Reloaded configuration.");
-        return true;
     }
 
 }

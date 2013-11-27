@@ -10,12 +10,17 @@
 
 package com.pwn9.pwnchat.listeners;
 
-import com.pwn9.pwnchat.*;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerJoinEvent;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.PostLoginEvent;
+import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
+
+import com.pwn9.pwnchat.Channel;
+import com.pwn9.pwnchat.ChannelManager;
+import com.pwn9.pwnchat.Chatter;
+import com.pwn9.pwnchat.ChatterManager;
+import com.pwn9.pwnchat.PwnChat;
 
 /**
  * Listen for Player join events and set up their default channels.
@@ -28,13 +33,13 @@ public class PlayerJoinListener implements Listener {
 
     public PlayerJoinListener(PwnChat instance) {
         plugin = instance;
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        plugin.getProxy().getPluginManager().registerListener(plugin, this);
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    public void onPlayerJoin(PostLoginEvent event) {
 
-        Player p = event.getPlayer();
+        ProxiedPlayer p = event.getPlayer();
         Chatter chatter = ChatterManager.getInstance().getOrCreate(p);
 
         StringBuilder channelMessage = new StringBuilder();

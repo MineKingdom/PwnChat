@@ -10,6 +10,8 @@
 
 package com.pwn9.pwnchat.config;
 
+import net.craftminecraft.bungee.bungeeyaml.supereasyconfig.ConfigObject;
+
 /**
  * Configuration for a Channel
  * User: ptoal

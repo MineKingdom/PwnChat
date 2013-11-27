@@ -10,12 +10,17 @@
 
 package com.pwn9.pwnchat.commands.subcommands;
 
-import com.pwn9.pwnchat.*;
+import java.util.logging.Logger;
+
+import net.md_5.bungee.api.CommandSender;
+
+import com.pwn9.pwnchat.Channel;
+import com.pwn9.pwnchat.ChannelManager;
+import com.pwn9.pwnchat.Chatter;
+import com.pwn9.pwnchat.ChatterManager;
+import com.pwn9.pwnchat.PwnChat;
 import com.pwn9.pwnchat.commands.SubCommand;
 import com.pwn9.pwnchat.utils.LogManager;
-import org.bukkit.command.CommandSender;
-
-import java.util.logging.Logger;
 
 /**
  * Reload configs
@@ -27,13 +32,13 @@ import java.util.logging.Logger;
 public class dumpdata extends SubCommand {
 
     public dumpdata(PwnChat instance) {
-        super(instance,"dumpdata");
+        super(instance, "dumpdata", "pwnchat.debug");
         setUsage("dumpdata");
         setDescription("Dump internal data to logfile.");
-        setPermission("pwnchat.debug");
     }
 
-    public boolean execute(CommandSender sender, String commandName, String[] args) {
+    @Override
+    public void execute(CommandSender sender, String[] args) {
         Logger l = LogManager.logger;
         for (Channel c : ChannelManager.getInstance().getChannelList()) {
             l.info("Channel: " + c.getName() + " Listeners: " + c.getRecipients().size());
@@ -48,7 +53,6 @@ public class dumpdata extends SubCommand {
         }
 
         sender.sendMessage(PwnChat.PREFIX + " Check pwnchat.log for data.");
-        return true;
     }
 
 }

@@ -10,12 +10,17 @@
 
 package com.pwn9.pwnchat.commands.subcommands;
 
-import com.pwn9.pwnchat.*;
-import com.pwn9.pwnchat.commands.SubCommand;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import java.util.List;
+
+import net.md_5.bungee.api.CommandSender;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+
+import com.pwn9.pwnchat.Channel;
+import com.pwn9.pwnchat.ChannelManager;
+import com.pwn9.pwnchat.Chatter;
+import com.pwn9.pwnchat.ChatterManager;
+import com.pwn9.pwnchat.PwnChat;
+import com.pwn9.pwnchat.commands.SubCommand;
 
 /**
  * List Channels
@@ -27,40 +32,40 @@ import java.util.List;
 public class listen extends SubCommand {
 
     public listen(PwnChat instance) {
-        super(instance,"listen");
+        super(instance, "listen", "pwnchat.listen");
         setUsage("listen <channel>");
         setDescription("Listen to a channel.");
-        setPermission("pwnchat.listen");
     }
 
-    public boolean execute(CommandSender sender, String commandName, String[] args) {
+    @Override
+    public void execute(CommandSender sender, String[] args) {
 
-        if (!(sender instanceof Player)) {
+        if (!(sender instanceof ProxiedPlayer)) {
             sender.sendMessage(PwnChat.PREFIX + " Only players can execute this command.");
-            return true;
+            return;
         }
 
         if (args.length < 2) {
             sender.sendMessage(getUsage());
-            return true;
+            return;
         }
 
         if (args[1].equalsIgnoreCase("local")) {
             sender.sendMessage(PwnChat.PREFIX+" You always listen to the local server channel.");
         }
 
-        Chatter chatter = ChatterManager.getInstance().getOrCreate((Player) sender);
+        Chatter chatter = ChatterManager.getInstance().getOrCreate((ProxiedPlayer) sender);
         Channel channel = ChannelManager.getInstance().getChannel(args[1].toLowerCase());
 
         if (channel == null ) {
             sender.sendMessage(PwnChat.PREFIX + " Channel named: " + args[1] + " does not exist!");
-            return true;
+            return;
         }
 
 
         if (channel.hasChatter(chatter)) {
             sender.sendMessage(PwnChat.PREFIX + " You are already listening to that channel!");
-            return true;
+            return;
         }
 
         if (chatter.addChannel(channel)) {
@@ -68,12 +73,10 @@ public class listen extends SubCommand {
         } else {
             sender.sendMessage(PwnChat.PREFIX + " You aren't allowed to listen to the '" + channel.getName() + "' channel!");
         }
-
-        return true;
     }
 
     @Override
-    public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+    public List<String> tabComplete(CommandSender sender, String[] args) {
         return ChannelManager.getInstance().getCompletions(sender, args);
     }
 }

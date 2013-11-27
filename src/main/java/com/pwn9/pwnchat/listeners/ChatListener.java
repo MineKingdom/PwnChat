@@ -10,15 +10,21 @@
 
 package com.pwn9.pwnchat.listeners;
 
-import com.pwn9.pwnchat.*;
-import com.pwn9.pwnchat.utils.ChannelFormat;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-
 import java.util.Set;
+
+import net.md_5.bungee.api.connection.Connection;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.event.ChatEvent;
+import net.md_5.bungee.api.plugin.Listener;
+import net.md_5.bungee.event.EventHandler;
+import net.md_5.bungee.event.EventPriority;
+
+import com.pwn9.pwnchat.Channel;
+import com.pwn9.pwnchat.ChannelManager;
+import com.pwn9.pwnchat.Chatter;
+import com.pwn9.pwnchat.ChatterManager;
+import com.pwn9.pwnchat.PwnChat;
+import com.pwn9.pwnchat.utils.ChannelFormat;
 
 public class ChatListener implements Listener {
 	
@@ -27,7 +33,7 @@ public class ChatListener implements Listener {
 	
 	public ChatListener(PwnChat plugin) {
 		this.plugin = plugin;
-        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+        plugin.getProxy().getPluginManager().registerListener(plugin, this);
 
     }
 
@@ -35,22 +41,35 @@ public class ChatListener implements Listener {
     public String getShortName() { return "PWNCHAT"; }
 
     @EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerChat(AsyncPlayerChatEvent event) {
-
-        if (event.isCancelled()) return;
-
-        Player p = event.getPlayer();
+	public void onPlayerChat(ChatEvent event) {
+    	Connection sender = event.getSender();
+    	
+        if (event.isCancelled() || !(sender instanceof ProxiedPlayer)) {
+        	return;
+        }
+        
+        
+        
+        ProxiedPlayer p = (ProxiedPlayer) sender;
         String message = event.getMessage();
         Chatter chatter = ChatterManager.getInstance().getOrCreate(p);
 
-        // If using a shortcut, override the current channel focus
-        Channel c = ChannelManager.getInstance().shortcutLookup(message);
-
-        // If not using shortcut, try channel focus.
-        if (c == null) {
-            c = chatter.getFocus();
+        
+        Channel c;
+        
+        if (event.isCommand()) {
+        	String[] split = message.split(" ", 2);
+        	if (split.length < 2) {
+        		return;
+        	}
+        	if (split[0].length() == 1) {
+        		c = ChannelManager.getInstance().shortcutLookup(message);
+        	} else {
+        		c = ChannelManager.getInstance().getChannel(split[0]);
+        	}
+        	message = split[1];
         } else {
-            message = message.substring(1);
+            c = chatter.getFocus();
         }
 
         // If no channel, then return, as we're just going to let the local chat
@@ -62,70 +81,24 @@ public class ChatListener implements Listener {
             // Remove them from the channel, and dump them back in
             // Local chat
             chatter.removeChannel(c);
-            chatter.setFocus(null);
+            if (c != chatter.getFocus()) {
+            	chatter.setFocus(c);
+            } else {
+            	chatter.setFocus(ChannelManager.getInstance().getLocal());
+            }
+            event.setCancelled(true);
             return;
         }
         String format = ChannelFormat.getFormat(p, c, plugin);
-        event.setFormat(format);
 
+        event.setCancelled(true);
         if (c.isPrivateChannel()) {
-            event.setCancelled(true);
             c.sendMessage(plugin,p.getDisplayName(),format,message);
         } else {
-            event.setMessage(message);
-            Set<Player> recipientList = event.getRecipients();
-
-            try  {
-                recipientList.clear();
-                recipientList.addAll(c.getRecipients());
-            } catch (UnsupportedOperationException ex) {
-                plugin.getLogger().warning("Caught an exception while trying to manipulate recipients list: "+ex.getMessage());
-                event.setCancelled(true);
-                return;
+            for (ProxiedPlayer target : c.getRecipients()) {
+            	target.sendMessage(String.format(format, p, message));
             }
+            
         }
-        plugin.sendToChannel(p,c,format, message);
-
 	}
-
-    /**
-     * @return The primary rulechain for this filter
-     */
-//    @Override
-//    public RuleChain getRuleChain() {
-//        return chatRuleChain;
-//    }
-//
-//    @Override
-//    public boolean isActive() {
-//        return active;
-//    }
-
-    /**
-     * Activate this listener.  This method can be called either by the owning plugin
-     * or by PwnFilter.  PwnFilter will call the shutdown / activate methods when PwnFilter
-     * is enabled / disabled and whenever it is reloading its config / rules.
-     * <p/>
-     * These methods could either register / deregister the listener with Bukkit, or
-     * they could just enable / disable the use of the filter.
-     *
-     * @param config PwnFilter Configuration object, which the plugin can read for configuration
-     *               information. (eg: config.getString("ruledir")
-     */
-//    @Override
-//    public void activate(Configuration config) {
-//        if (isActive()) return;
-//        chatRuleChain = RuleManager.getInstance().getRuleChain("pwnchat.txt");
-//        tagRuleChain = RuleManager.getInstance().getRuleChain("pwnchat_tag.txt");
-//
-//        Bukkit.getPluginManager().registerEvents(this,plugin);
-//    }
-//
-//    @Override
-//    public void shutdown() {
-//        if (active) {
-//            HandlerList.unregisterAll(this);
-//            active = false;
-//        }
-//    }
 }
