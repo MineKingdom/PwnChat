@@ -10,6 +10,7 @@
 
 package com.pwn9.pwnchat.listeners;
 
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PostLoginEvent;
 import net.md_5.bungee.api.plugin.Listener;
@@ -21,6 +22,7 @@ import com.pwn9.pwnchat.ChannelManager;
 import com.pwn9.pwnchat.Chatter;
 import com.pwn9.pwnchat.ChatterManager;
 import com.pwn9.pwnchat.PwnChat;
+import com.pwn9.pwnchat.utils.MessageUtils;
 
 /**
  * Listen for Player join events and set up their default channels.
@@ -55,6 +57,8 @@ public class PlayerJoinListener implements Listener {
         }
         channelMessage.deleteCharAt(channelMessage.length()-1);
         event.getPlayer().sendMessage(PwnChat.PREFIX + " Listening to: " + channelMessage.toString());
+        
+        MessageUtils.sendToAll(ChatColor.YELLOW + p.getName() + " vient de se connecter.");
 
     }
 }

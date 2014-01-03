@@ -10,6 +10,7 @@
 
 package com.pwn9.pwnchat.listeners;
 
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.event.PlayerDisconnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -19,6 +20,7 @@ import com.pwn9.pwnchat.Chatter;
 import com.pwn9.pwnchat.ChatterManager;
 import com.pwn9.pwnchat.PwnChat;
 import com.pwn9.pwnchat.utils.LogManager;
+import com.pwn9.pwnchat.utils.MessageUtils;
 
 /**
  * Listen for Player join events and set up their default channels.
@@ -40,5 +42,7 @@ public class PlayerQuitListener implements Listener {
         LogManager.getInstance().debugMedium("Removing Player: " + event.getPlayer().getName());
         Chatter chatter = ChatterManager.getInstance().getOrCreate(event.getPlayer());
         chatter.remove();
+        
+        MessageUtils.sendToAll(ChatColor.YELLOW + event.getPlayer().getName() + " vient de se déconnecter.");
     }
 }
