@@ -60,13 +60,6 @@ public class PwnChat extends Plugin {
         registerListeners();
 	}
 
-    public void setupPwnFilter() {
-    if (getProxy().getPluginManager().getPlugin("PwnFilter") != null) {
-
-    }
-    getLogger().info("PwnFilter Dependency not found.  Disabling chat filtering.");
-    }
-
     private void registerListeners() {
         new PlayerJoinListener(this);
         new PlayerQuitListener(this);
